@@ -1,0 +1,29 @@
+version: "3"
+
+tasks:
+  run:
+    desc: "Run tataisk and migrations"
+    cmds:
+      - task: run-tataisk
+      - task: run-migrator
+    run: always
+
+
+  run-tataisk:
+    desc: "Run tataisk main service"
+    cmds:
+      - go run tataisk/main.go
+    silent: true
+
+
+  run-migrator:
+    desc: "Run migrations"
+    cmds:
+      - go run migrator/main.go
+    silent: true
+
+  delayed-migrator:
+    desc: "Run migrations after 5 seconds delay"
+    cmds:
+      - sleep 5
+      - task: run-migrator

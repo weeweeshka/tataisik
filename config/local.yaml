@@ -1,0 +1,4 @@
+storagePath: "postgres://postgres:12345@:5432/sso?sslmode=disable"
+grpc:
+  port: 5000
+  timeout: 5s
