@@ -6,7 +6,7 @@ import (
 )
 
 type Config struct {
-	StoragePath string `yaml:"storage_path"`
+	StoragePath string `yaml:"storagePath"`
 	GRPC
 }
 
@@ -15,6 +15,7 @@ type Config struct {
 type GRPC struct {
 	Port    string `yaml:"port"`
 	Timeout string `yaml:"timeout"`
+	Secret  string `yaml:"secret"`
 }
 
 func MustLoadConfig() *Config {

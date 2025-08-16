@@ -1,4 +1,5 @@
-storagePath: "postgres://postgres:12345@:5432/sso?sslmode=disable"
+storagePath: "postgres://postgres:12345@:5432/film_data?sslmode=disable"
 grpc:
   port: 5000
   timeout: 5s
+  secret: "cum"

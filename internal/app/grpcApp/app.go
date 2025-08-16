@@ -2,6 +2,7 @@ package grpcApp
 
 import (
 	"fmt"
+	"github.com/weeweeshka/tataisk/internal/authInter"
 	grpcHandlers "github.com/weeweeshka/tataisk/internal/grpcHandlers"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
@@ -15,7 +16,10 @@ type GRPCServer struct {
 }
 
 func NewGRPCServer(port string, logr *zap.Logger, tataiskService grpcHandlers.Tataisk) *GRPCServer {
-	grpcServer := grpc.NewServer()
+	grpcServer := grpc.NewServer(
+		grpc.UnaryInterceptor(authInter.AuthInterceptor),
+	)
+
 	grpcHandlers.RegisterNewServer(grpcServer, tataiskService)
 	return &GRPCServer{
 		gRPCServer: grpcServer,
