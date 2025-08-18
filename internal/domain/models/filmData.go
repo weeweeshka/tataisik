@@ -6,7 +6,7 @@ type FilmData struct {
 	YearOfProd   uint32   `json:"year_of_prod" validate:"required,min=1900"`
 	Imdb         float32  `json:"imdb" validate:"required,min=0,max=10"`
 	Description  string   `json:"description" validate:"required"`
-	Country      []string `json:"country" validate:"omitempty"`
+	Country      []string `json:"country" validate:"required"`
 	Genre        []string `json:"genre" validate:"required"`
 	FilmDirector string   `json:"film_director" validate:"required"`
 	Screenwriter string   `json:"screenwriter" validate:"required"`
