@@ -4,7 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"path/filepath"
+	"os"
 	"time"
 
 	"github.com/golang-migrate/migrate/v4"
@@ -48,23 +48,33 @@ func NewStorage(connString string, logr *zap.Logger) (*Storage, error) {
 	}
 	logr.Info("connected to database", zap.String("path to db", connString))
 
-	absPath, err := filepath.Abs("../../migrations")
-	if err != nil {
-		return nil, fmt.Errorf("failed to determine absolute path: %w", err)
+	migrationPath := os.Getenv("MIGRATIONS_PATH")
+	if migrationPath == "" {
+		migrationPath = "./migrations"
 	}
 
-	migrationsUrl := "file://" + filepath.ToSlash(absPath)
+	var m *migrate.Migrate
 
-	m, err := migrate.New(migrationsUrl, connString)
+	for i := 0; i < 10; i++ {
+		m, err = migrate.New(migrationPath, connString)
+		if err == nil {
+			break
+		}
+		time.Sleep(2 * time.Second)
+	}
+
 	if err != nil {
-		return nil, fmt.Errorf("failed to init migrations: %w", err)
+		return nil, fmt.Errorf("failed to create migration instance: %w", err)
 	}
 
 	if err := m.Up(); err != nil && !errors.Is(err, migrate.ErrNoChange) {
 		return nil, fmt.Errorf("failed to run migrations: %w", err)
 	}
 
+	logr.Info("migrated successfully", zap.String("path", migrationPath))
+
 	return &Storage{db: dbPool}, nil
+
 }
 
 func (s *Storage) CreateFilmDB(ctx context.Context, data models.FilmData) (int32, error) {

@@ -39,7 +39,7 @@ func AuthInterceptor(
 			return nil, status.Error(codes.Unauthenticated, "unexpected signing method")
 		}
 
-		return secret, nil
+		return []byte(secret), nil
 	})
 
 	if err != nil {

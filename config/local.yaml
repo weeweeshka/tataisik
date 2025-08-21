@@ -1,4 +1,4 @@
-storagePath: "postgres://postgres:12345@:5432/film_data?sslmode=disable"
+storagePath: "postgres://postgres:12345@db:5432/tataisk?sslmode=disable"
 grpc:
   port: 5000
   timeout: 5s
