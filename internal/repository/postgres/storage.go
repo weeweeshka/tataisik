@@ -4,10 +4,8 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"os"
 	"time"
 
-	"github.com/golang-migrate/migrate/v4"
 	_ "github.com/golang-migrate/migrate/v4/database/postgres"
 	_ "github.com/golang-migrate/migrate/v4/source/file"
 	"github.com/jackc/pgx/v5"
@@ -47,32 +45,6 @@ func NewStorage(connString string, logr *zap.Logger) (*Storage, error) {
 		return nil, fmt.Errorf("failed to create pool: %w", err)
 	}
 	logr.Info("connected to database", zap.String("path to db", connString))
-
-	migrationPath := os.Getenv("MIGRATIONS_PATH")
-	if migrationPath == "" {
-		migrationPath = "./migrations"
-	}
-
-	var m *migrate.Migrate
-
-	for i := 0; i < 10; i++ {
-		m, err = migrate.New(migrationPath, connString)
-		if err == nil {
-			break
-		}
-		time.Sleep(2 * time.Second)
-	}
-
-	if err != nil {
-		return nil, fmt.Errorf("failed to create migration instance: %w", err)
-	}
-
-	if err := m.Up(); err != nil && !errors.Is(err, migrate.ErrNoChange) {
-		return nil, fmt.Errorf("failed to run migrations: %w", err)
-	}
-
-	logr.Info("migrated successfully", zap.String("path", migrationPath))
-
 	return &Storage{db: dbPool}, nil
 
 }
