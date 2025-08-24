@@ -34,7 +34,7 @@ func AuthInterceptor(
 	}
 	tokenString := strings.TrimPrefix(authHeader, "Bearer ")
 
-	_, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, status.Error(codes.Unauthenticated, "unexpected signing method")
 		}
@@ -44,6 +44,21 @@ func AuthInterceptor(
 
 	if err != nil {
 		return nil, status.Errorf(codes.InvalidArgument, "invalid token")
+	}
+
+	claims, ok := token.Claims.(jwt.MapClaims)
+	if !ok {
+		return nil, status.Errorf(codes.InvalidArgument, "invalid claims")
+	}
+
+	role, _ := claims["role"].(string)
+
+	if strings.Contains(info.FullMethod, "Get") {
+		return handler(ctx, req)
+	}
+
+	if role != "admin" {
+		return nil, status.Errorf(codes.PermissionDenied, "only admin can access this method")
 	}
 
 	return handler(ctx, req)
