@@ -39,7 +39,7 @@ func (s *GRPCServer) MustRun() error {
 		return fmt.Errorf("cannot serve: %w", err)
 	}
 
-	s.logr.Info("grpc server started", zap.String("port", s.port))
+	s.logr.Info("transport server started", zap.String("port", s.port))
 	return nil
 }
 
